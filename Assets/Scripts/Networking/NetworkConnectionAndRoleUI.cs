@@ -95,6 +95,9 @@ public class NetworkConnectionAndRoleUI : MonoBehaviour
             return;
         }
 
+        if (player.AssignedRole != TankCrewRole.None)
+            return;
+
         float x = 12f;
         float y = 12f;
         float width = 210f;

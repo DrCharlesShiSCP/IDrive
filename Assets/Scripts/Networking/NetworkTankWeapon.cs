@@ -9,6 +9,8 @@ public class NetworkTankWeapon : NetworkBehaviour
     [Header("References")]
     public Transform barrel;
     public GameObject projectilePrefab;
+    public GameObject muzzleFlashRoot;
+    public ParticleSystem[] muzzleFlashEffects;
 
     [Header("Projectile")]
     public float projectileSpeed = 55f;
@@ -34,6 +36,12 @@ public class NetworkTankWeapon : NetworkBehaviour
 
     private bool reloadHeld;
     private float reloadTimer;
+    private ParticleSystem[] cachedMuzzleFlashEffects;
+
+    private void Awake()
+    {
+        CacheMuzzleFlashEffects();
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -88,9 +96,57 @@ public class NetworkTankWeapon : NetworkBehaviour
         if (projectileLifetime > 0f)
             StartCoroutine(DestroyProjectileAfterLifetime(projectile, networkObject));
 
+        PlayMuzzleFlashClientRpc(barrel.position, barrel.rotation);
+
         ShellLoaded.Value = false;
         reloadTimer = 0f;
         ReloadProgress.Value = 0f;
+    }
+
+    [ClientRpc]
+    private void PlayMuzzleFlashClientRpc(Vector3 position, Quaternion rotation)
+    {
+        PlayMuzzleFlash(position, rotation);
+    }
+
+    private void PlayMuzzleFlash(Vector3 position, Quaternion rotation)
+    {
+        CacheMuzzleFlashEffects();
+
+        if (muzzleFlashRoot != null)
+        {
+            muzzleFlashRoot.SetActive(true);
+            muzzleFlashRoot.transform.SetPositionAndRotation(position, rotation);
+        }
+
+        if (cachedMuzzleFlashEffects == null)
+            return;
+
+        foreach (ParticleSystem muzzleFlashEffect in cachedMuzzleFlashEffects)
+        {
+            if (muzzleFlashEffect == null)
+                continue;
+
+            muzzleFlashEffect.gameObject.SetActive(true);
+            muzzleFlashEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            muzzleFlashEffect.Clear(true);
+            muzzleFlashEffect.Play(true);
+        }
+    }
+
+    private void CacheMuzzleFlashEffects()
+    {
+        if (cachedMuzzleFlashEffects != null && cachedMuzzleFlashEffects.Length > 0)
+            return;
+
+        if (muzzleFlashEffects != null && muzzleFlashEffects.Length > 0)
+        {
+            cachedMuzzleFlashEffects = muzzleFlashEffects;
+            return;
+        }
+
+        if (muzzleFlashRoot != null)
+            cachedMuzzleFlashEffects = muzzleFlashRoot.GetComponentsInChildren<ParticleSystem>(true);
     }
 
     private void UpdateReload()

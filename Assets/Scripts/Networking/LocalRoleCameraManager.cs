@@ -61,6 +61,7 @@ public class LocalRoleCameraManager : MonoBehaviour
         if (targetCamera == null)
             return;
 
+        targetCamera.gameObject.SetActive(active);
         targetCamera.enabled = active;
 
         AudioListener listener = targetCamera.GetComponent<AudioListener>();
