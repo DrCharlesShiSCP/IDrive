@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 5d039134acf55a14fbb781a9c088c4ea
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21893
+  packageName: True Explosions!
+  packageVersion: 1.0
+  assetPath: Assets/True Explosions/System/Scripts/exploders/Exploder.cs
+  uploadId: 22155

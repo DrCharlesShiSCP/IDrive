@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 4c8447707869e4740843fba36fa42f84
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21893
+  packageName: True Explosions!
+  packageVersion: 1.0
+  assetPath: Assets/True Explosions/System/Scripts/effects/exploderComponents/ParticleComponent.cs
+  uploadId: 22155

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 79e929dd04b3c4e4485996a102e4cd74
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21893
+  packageName: True Explosions!
+  packageVersion: 1.0
+  assetPath: Assets/True Explosions/System/Shaders/SphereVolumetricExplosion.shader
+  uploadId: 22155

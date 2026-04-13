@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 11f4258339dbc7d40a62d752887441c0
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 21893
+  packageName: True Explosions!
+  packageVersion: 1.0
+  assetPath: Assets/True Explosions/System/Scripts/effects/exploderComponents/VolumetricComponent.cs
+  uploadId: 22155
