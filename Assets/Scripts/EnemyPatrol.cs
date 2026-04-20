@@ -6,16 +6,26 @@ public class EnemyPatrol : MonoBehaviour
 {
     public float patrolRange = 10f;
     public float waitTime = 2f;
+    [SerializeField] private bool makeRigidbodyKinematicWhilePatrolling = true;
+
     private NavMeshAgent navMeshAgent;
+    private Rigidbody patrolRigidbody;
     private Vector3 initialPosition;
     private Vector3 targetPosition;
     private bool isWaiting = false;
     private float waitTimer = 0f;
     private bool hasValidNavMesh;
+    private bool cachedRigidbodyState;
+    private bool originalRigidbodyIsKinematic;
+
+    private void Awake()
+    {
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        patrolRigidbody = GetComponent<Rigidbody>();
+    }
 
     void Start()
     {
-        navMeshAgent = GetComponent<NavMeshAgent>();
         if (navMeshAgent == null)
         {
             Debug.LogWarning($"{name} has EnemyPatrol but no NavMeshAgent.", this);
@@ -25,7 +35,8 @@ public class EnemyPatrol : MonoBehaviour
 
         if (!ShouldRunServerSimulation())
         {
-            navMeshAgent.isStopped = true;
+            PrepareRigidbodyForNavigation();
+            DisableLocalAgentSimulation();
             return;
         }
 
@@ -37,6 +48,8 @@ public class EnemyPatrol : MonoBehaviour
             return;
         }
 
+        PrepareRigidbodyForNavigation();
+        navMeshAgent.isStopped = false;
         initialPosition = transform.position;
         SetNewPatrolPoint();
     }
@@ -45,8 +58,7 @@ public class EnemyPatrol : MonoBehaviour
     {
         if (!ShouldRunServerSimulation())
         {
-            if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled && navMeshAgent.isOnNavMesh)
-                navMeshAgent.isStopped = true;
+            DisableLocalAgentSimulation();
             return;
         }
 
@@ -70,6 +82,14 @@ public class EnemyPatrol : MonoBehaviour
         }
     }
 
+    public void ReleaseRigidbodyControl()
+    {
+        if (patrolRigidbody == null || !cachedRigidbodyState)
+            return;
+
+        patrolRigidbody.isKinematic = originalRigidbodyIsKinematic;
+    }
+
     private bool EnsureAgentIsOnNavMesh()
     {
         if (navMeshAgent.isOnNavMesh)
@@ -80,6 +100,40 @@ public class EnemyPatrol : MonoBehaviour
             return false;
 
         return navMeshAgent.Warp(hit.position);
+    }
+
+    private void PrepareRigidbodyForNavigation()
+    {
+        if (!makeRigidbodyKinematicWhilePatrolling || patrolRigidbody == null)
+            return;
+
+        if (!cachedRigidbodyState)
+        {
+            originalRigidbodyIsKinematic = patrolRigidbody.isKinematic;
+            cachedRigidbodyState = true;
+        }
+
+        if (!patrolRigidbody.isKinematic)
+        {
+            patrolRigidbody.linearVelocity = Vector3.zero;
+            patrolRigidbody.angularVelocity = Vector3.zero;
+        }
+
+        patrolRigidbody.isKinematic = true;
+    }
+
+    private void DisableLocalAgentSimulation()
+    {
+        if (navMeshAgent == null || !navMeshAgent.enabled)
+            return;
+
+        if (navMeshAgent.isOnNavMesh)
+            navMeshAgent.isStopped = true;
+
+        navMeshAgent.updatePosition = false;
+        navMeshAgent.updateRotation = false;
+        navMeshAgent.enabled = false;
+        enabled = false;
     }
 
     void SetNewPatrolPoint()

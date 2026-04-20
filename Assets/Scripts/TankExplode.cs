@@ -28,9 +28,13 @@ public class TankExplode : MonoBehaviour
     private bool exploded;
     public bool HasExploded => exploded;
 
-    private void Start()
+    private void Awake()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
+    }
+
+    private void Start()
+    {
         if (explosion1 != null)
             explosion1.SetActive(false);
         if (explosion2 != null)
@@ -45,6 +49,7 @@ public class TankExplode : MonoBehaviour
         if (!exploded && IsProjectile(collision.gameObject))
         {
             exploded = true;
+            StopTankMovement();
             ApplyUpwardForce();
             ApplyRandomForces();
             if (explosion1 != null)
@@ -58,7 +63,6 @@ public class TankExplode : MonoBehaviour
                 StartCoroutine(DespawnAfterDelay(networkObject, 3f));
             else
                 Destroy(gameObject, 3f);
-            StopTankMovement();
         }
     }
 
@@ -97,12 +101,22 @@ public class TankExplode : MonoBehaviour
     }
     private void StopTankMovement()
     {
-        if (navMeshAgent != null)
-            navMeshAgent.isStopped = true;
+        if (navMeshAgent != null && navMeshAgent.enabled)
+        {
+            if (navMeshAgent.isOnNavMesh)
+                navMeshAgent.isStopped = true;
+
+            navMeshAgent.updatePosition = false;
+            navMeshAgent.updateRotation = false;
+            navMeshAgent.enabled = false;
+        }
 
         EnemyPatrol enemyPatrol = GetComponent<EnemyPatrol>();
         if (enemyPatrol != null)
+        {
+            enemyPatrol.ReleaseRigidbodyControl();
             enemyPatrol.enabled = false;
+        }
     }
     public void ApplyRandomForces()
     {
